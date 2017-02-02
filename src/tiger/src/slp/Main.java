@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.util.HashSet;
 
+import javafx.scene.control.Tab;
 import slp.Slp.Exp;
 import slp.Slp.Exp.Eseq;
 import slp.Slp.Exp.Id;
@@ -11,6 +12,7 @@ import slp.Slp.Exp.Num;
 import slp.Slp.Exp.Op;
 import slp.Slp.ExpList;
 import slp.Slp.Stm;
+import slp.Slp.Table;
 import util.Bug;
 import util.Todo;
 import control.Control;
@@ -27,12 +29,12 @@ public class Main {
             int n1 = maxArgsStm(((Exp.Eseq) exp).stm);
             int n2 = maxArgsExp(((Exp.Eseq) exp).exp);
             return n1 >= n2 ? n1 : n2;
-        // May be OpExp
+            // May be OpExp
         } else if (exp instanceof Exp.Op) {
-            int n1 = maxArgsExp(((Exp.Op)exp).left);
+            int n1 = maxArgsExp(((Exp.Op) exp).left);
             int n2 = maxArgsExp(((Op) exp).right);
             return n1 >= n2 ? n1 : n2;
-        // Other Exp won't have PrintStm
+            // Other Exp won't have PrintStm
         } else {
             return 0;
         }
@@ -47,14 +49,16 @@ public class Main {
             int n1 = maxArgsExp(((ExpList.Pair) explist).exp);
             int n2 = maxArgsExpList(((ExpList.Pair) explist).list);
             return n1 >= n2 ? n1 : n2;
-        // May be Last
+            // May be Last
         } else {
-            return maxArgsExp(((ExpList.Last)explist).exp);
+            return maxArgsExp(((ExpList.Last) explist).exp);
         }
     }
 
     // Lab1 Exercise3
     // Added by Yang.Han
+    // Also will be used in Lab1 Exercise 4. (I change the way
+    // to print, now it's only used in Exercise 3).
     private int countExpList(ExpList.T explist) {
         if (explist instanceof ExpList.Last) {
             return 1;
@@ -102,17 +106,92 @@ public class Main {
     // interpreter
 
     // Lab1 Exercise4
+
+    Table header = null;
+
     private void interpExp(Exp.T exp) {
-        new Todo();
+        Table currentId = header;
+        if (exp instanceof Exp.Num) {
+            header = new Table(Integer.toString(((Num) exp).num), ((Num) exp).num, header);
+        } else if (exp instanceof Exp.Id) {
+            header = new Table(((Id) exp).id, Table.lookup(header, ((Id) exp).id).getValue(), header);
+        } else if (exp instanceof Exp.Op) {
+            interpExp(((Op) exp).left);
+            int leftValue = header.getValue();
+            interpExp(((Op) exp).right);
+            int rightValue = header.getValue();
+            switch (((Op) exp).op) {
+                case ADD:
+                    header = new Table(currentId.getId(), leftValue + rightValue, header);
+                    break;
+                case SUB:
+                    header = new Table(currentId.getId(), leftValue - rightValue, header);
+                    break;
+                case TIMES:
+                    header = new Table(currentId.getId(), leftValue * rightValue, header);
+                    break;
+                case DIVIDE:
+                    header = new Table(currentId.getId(), leftValue / rightValue, header);
+                    break;
+                default:
+                    System.out.println("[Error]: UnKnow operator");
+                    new Bug();
+            }
+        } else if (exp instanceof Eseq) {
+            interpStm(((Eseq) exp).stm);
+            interpExp(((Eseq) exp).exp);
+            int result = header.getValue();
+            header = new Table(currentId.getId(), result, header);
+        }
+    }
+
+    private void interpExpList(ExpList.T explist) {
+        if (explist instanceof ExpList.Pair) {
+            // In a ExpList, a Exp May be result a value, so we should
+            // generate a Table state for it to store the potential value.
+            header = new Table("ExpInExpList" + Long.toString(System.currentTimeMillis()), header);
+            interpExp(((ExpList.Pair) explist).exp);
+            // After we complete this, we just print it. Because it must
+            // be invoked by print() in SLP.
+            System.out.print(header.getValue());
+            System.out.print(" ");
+            interpExpList(((ExpList.Pair) explist).list);
+        } else {
+            // The same reason above.
+            header = new Table("ExpInExpList" + Long.toString(System.currentTimeMillis()), header);
+            interpExp(((ExpList.Last) explist).exp);
+            System.out.print(header.getValue());
+            System.out.print(" ");
+        }
     }
 
     private void interpStm(Stm.T prog) {
         if (prog instanceof Stm.Compound) {
-            new Todo();
+//            new Todo();
+            // Added by Yang.Han
+            // For a CompoundStm, we should interpret all
+            // the stm in it sequentially.
+            interpStm(((Stm.Compound) prog).s1);
+            interpStm(((Stm.Compound) prog).s2);
         } else if (prog instanceof Stm.Assign) {
-            new Todo();
+//            new Todo();
+            // Add By Yang.Han
+            // Assign will cause a identifier be initialised
+            // or updated. So we try to get it's old state first.
+            Table result = Table.lookup(header, ((Stm.Assign) prog).id);
+            if (null == result) {
+                header = new Table(((Stm.Assign) prog).id, header);
+            } else {
+                header = new Table(result.getId(), result.getValue(), header);
+            }
+            interpExp(((Stm.Assign) prog).exp);
         } else if (prog instanceof Stm.Print) {
-            new Todo();
+//            new Todo();
+            // Added By Yang.Han
+            interpExpList(((Stm.Print) prog).explist);
+            // We will print all the args in interExpList, so here we just
+            // print a '\n' to end current PrintStm.
+            System.out.println();
         } else
             new Bug();
     }
