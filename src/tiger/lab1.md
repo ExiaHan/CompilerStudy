@@ -190,3 +190,9 @@ To use functional memory model, I change it like below.
         return 0;
     }
 ```
+
+## Exercise 4
+
+This exercise want us to write the interpretor with functional programming mind. The code is too large to paste here. Just view them in slp/Main.java :)\.
+
+What I want to say is that I use a variable named header in Class Main, and I update it when do the interpretor, I do not know whether it's legal in functional programming. Hope someone can tell me.
