@@ -253,7 +253,18 @@ public class Main {
                     emit("\tmovl\t%eax, %ecx\n");
                     emit("\tmovl\t%edx, %eax\n");
                     emit("\tcltd\n");
+                    // Exercise 5
+                    // Added by Yang.Han
+                    // If ecx is 0, we jump to .skip
+                    emit("\tcmp\t$0, %ecx\n");
+                    emit("\tjz\t.skip\n");
                     emit("\tdiv\t%ecx\n");
+                    // Added by Yang.Han for Exercise 5
+                    // Do exit syscall.
+                    emit(".skip:\n");
+                    emit("\tmov\t$0, %ebx\n");
+                    emit("\tmov\t$0x1, %eax\n");
+                    emit("\tint\t$0x80\n");
                     break;
                 default:
                     new Bug();
@@ -362,7 +373,7 @@ public class Main {
                 writer.write(buf.toString());
                 writer.write("\tleave\n\tret\n\n");
                 writer.close();
-                Process child = Runtime.getRuntime().exec("gcc slp_gen.s");
+                Process child = Runtime.getRuntime().exec("gcc -m32 slp_gen.s");
                 child.waitFor();
                 if (!Control.ConSlp.keepasm)
                     Runtime.getRuntime().exec("rm -rf slp_gen.s");

@@ -195,4 +195,9 @@ To use functional memory model, I change it like below.
 
 This exercise want us to write the interpretor with functional programming mind. The code is too large to paste here. Just view them in slp/Main.java :)\.
 
-What I want to say is that I use a variable named header in Class Main, and I update it when do the interpretor, I do not know whether it's legal in functional programming. Hope someone can tell me.
+**What I want to say is that I use a variable named header in Class Main, and I update it when do the interpretor, it breaks the taget that coding in functional programming mind :(\.** 
+*What caused by this is that I will try to refactor it to match the require later\.*
+
+## Exercise 5
+
+This exercise want us to do a elegent exit when the dividend is zero, what is do is add a cmp before do divide operation, if dividend is zero, directlly exit by call syscall "exit"\.
