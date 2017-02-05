@@ -1,6 +1,8 @@
 # Lab1
 
-## Exercise 1
+## PartA SLP
+
+### Exercise 1
 
 What the program will output is:
 ```cpp
@@ -8,7 +10,7 @@ What the program will output is:
 80
 ```
 
-## Exercise 2
+### Exercise 2
 
 **A\.** slp.java realise the SLP Syntax by implement some java class to represent Exp, ExpList and Stm. It divide the syntax into three categories: Exp, ExpList and Stm. It first implement Exp, in Exp it implement the *id* and *num*, then use them and the Stm that will be implemented in the later and the Exp itself to conduct Exp recursely. In one word, we implement the "atom" syntax elements, then used them to conduct "non-atom" syntax elements.
 
@@ -34,7 +36,7 @@ ExpB21 -> b
 
 *Above may have error because it a little complex to write them manually..... Read the code, you will understand it\.*
 
-## Exercise 3
+### Exercise 3
 
 The Code is here, and I have added comments in code.
 ```java
@@ -191,13 +193,20 @@ To use functional memory model, I change it like below.
     }
 ```
 
-## Exercise 4
+### Exercise 4
 
 This exercise want us to write the interpretor with functional programming mind. The code is too large to paste here. Just view them in slp/Main.java :)\.
 
 **What I want to say is that I use a variable named header in Class Main, and I update it when do the interpretor, it breaks the taget that coding in functional programming mind :(\.** 
 *What caused by this is that I will try to refactor it to match the require later\.*
 
-## Exercise 5
+### Exercise 5
 
 This exercise want us to do a elegent exit when the dividend is zero, what is do is add a cmp before do divide operation, if dividend is zero, directlly exit by call syscall "exit"\.
+
+## PartB Lexer
+
+### Exercise 6
+
+
+## PartC Parser
